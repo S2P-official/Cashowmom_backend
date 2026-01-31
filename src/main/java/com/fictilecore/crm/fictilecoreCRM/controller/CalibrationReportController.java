@@ -1,10 +1,13 @@
 package com.fictilecore.crm.fictilecoreCRM.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportDTO;
 import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportDaySummaryResponse;
+import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportResponse;
 import com.fictilecore.crm.fictilecoreCRM.entity.CalibrationReport;
 import com.fictilecore.crm.fictilecoreCRM.service.CalibrationReportService;
 
@@ -83,6 +86,18 @@ public List<CalibrationReport> getAllExceptCompletedReports(@PathVariable Long t
     return calibrationReportService.getAllExceptCompletedReportsByTenant(tenantId);
 }
 
+@GetMapping
+public ResponseEntity<List<CalibrationReportResponse>> getReports(
+        @RequestParam Long tenantId,
+        @RequestParam Long employeeId,
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        LocalDate date
+) {
+    List<CalibrationReportResponse> reports = calibrationReportService
+            .getReportsByTenantEmployeeAndDate(tenantId, employeeId, date);
+    return ResponseEntity.ok(reports);
+}
 
 
 }

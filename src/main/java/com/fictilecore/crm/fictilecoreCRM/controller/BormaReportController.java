@@ -1,15 +1,17 @@
 package com.fictilecore.crm.fictilecoreCRM.controller;
 
-import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportRequestDTO;
+import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportDTO;
+import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportDaySummaryResponse;
+import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportDTO;
+import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportDaySummaryResponse;
 import com.fictilecore.crm.fictilecoreCRM.entity.BormaReport;
-import com.fictilecore.crm.fictilecoreCRM.entity.Employee;
-import com.fictilecore.crm.fictilecoreCRM.entity.Tenant;
-import com.fictilecore.crm.fictilecoreCRM.mapper.BormaReportMapper;
-import com.fictilecore.crm.fictilecoreCRM.repository.EmployeeRepository;
-import com.fictilecore.crm.fictilecoreCRM.repository.TenantRepository;
+import com.fictilecore.crm.fictilecoreCRM.entity.CalibrationReport;
+import com.fictilecore.crm.fictilecoreCRM.repository.BormaReportRepository;
 import com.fictilecore.crm.fictilecoreCRM.service.BormaReportService;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -17,81 +19,97 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/borma-reports")
-@CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class BormaReportController {
 
-    @Autowired
-    private TenantRepository tenantRepo;
+        @Autowired
+    private final BormaReportService bormaReportService;
 
-    @Autowired
-    private EmployeeRepository employeeRepo;
 
-    @Autowired
-    private BormaReportMapper mapper;
+    
 
-    @Autowired
-    private BormaReportService service;
+    // 🔹 POST – Save Borma Report
+@PostMapping("/tenant/{tenantId}/employee/{employeeId}")
+public BormaReport createReport(
+        @PathVariable Long tenantId,
+        @PathVariable(required = false) Long employeeId,
+        @RequestBody BormaReport report
+) {
+    return bormaReportService
+            .createReport(tenantId, employeeId, List.of(report)) // wrap in List
+            .get(0); // return first (and only) report
+}
 
-    // -------------------- CREATE REPORT --------------------
-    @PostMapping("/tenant/{tenantId}/employee/{employeeId}")
-    public BormaReport create(
-            @PathVariable Long tenantId,
-            @PathVariable Long employeeId,
-            @RequestBody BormaReportRequestDTO dto
-    ) {
-        Tenant tenant = tenantRepo.findById(tenantId)
-                .orElseThrow(() -> new RuntimeException("Tenant not found"));
 
-        Employee employee = employeeRepo.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        BormaReport report = mapper.toEntity(dto, tenant, employee);
-        return service.save(report);
-    }
-
-    // -------------------- GET ALL BY TENANT --------------------
+      // 2️⃣ Get all BORMA reports for tenant
     @GetMapping("/tenant/{tenantId}")
-    public List<BormaReport> getAllByTenant(@PathVariable Long tenantId) {
-        return service.getAll(tenantId);
+    public List<BormaReport> getReportsByTenant(
+            @PathVariable Long tenantId) {
+
+        return bormaReportService.getReportsByTenant(tenantId);
+
     }
-     
-    // -------------------- GET BY EMPLOYEE --------------------
+
+
+
+ // ✅ Get only reports for a specific employee (DTO response)
     @GetMapping("/tenant/{tenantId}/employee/{employeeId}")
-    public List<BormaReport> getByEmployee(
+    public List<BormaReportDTO> getReportsByEmployee(
             @PathVariable Long tenantId,
             @PathVariable Long employeeId
     ) {
-        return service.getByTenantAndEmployee(tenantId, employeeId);
+        return bormaReportService.getReportsByTenantAndEmployee(tenantId, employeeId);
     }
 
-    // -------------------- GET BY DATE --------------------
-    @GetMapping("/tenant/{tenantId}/date/{date}")
-    public List<BormaReport> getByDate(
-            @PathVariable Long tenantId,
-            @PathVariable String date
-    ) {
-        return service.getByDate(tenantId, LocalDate.parse(date));
-    }
-
-    // -------------------- GET PENDING REPORTS --------------------
-    @GetMapping("/tenant/{tenantId}/pending")
-    public List<BormaReport> getPendingReports(@PathVariable Long tenantId) {
-        return service.getAllExceptCompletedReportsByTenant(tenantId);
-    }
-
-    // -------------------- PATCH REPORT (PARTIAL UPDATE) --------------------
-    @PatchMapping("/{id}")
-    public BormaReport patchReport(
-            @PathVariable Long id,
-            @RequestBody BormaReport updatedFields
-    ) {
-        return service.patchReport(id, id, updatedFields);
-    }
-
-    // -------------------- DELETE REPORT --------------------
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id) {
-        service.deleteById(id);
-        return "Borma report deleted successfully";
-    }
+    
+    // ✅ Get reports by date
+@GetMapping("/tenant/{tenantId}/date/{date}")
+public BormaReportDaySummaryResponse getReportsByTenantAndDate(
+        @PathVariable Long tenantId,
+        @PathVariable String date
+) {
+    return bormaReportService
+            .getReportsByTenantAndDate(tenantId, LocalDate.parse(date));
 }
+
+
+
+
+    // ✅ Update report by ID
+// ✅ Partial update report by ID
+@PatchMapping("/{id}")
+public BormaReport patchReport(
+        @PathVariable Long id,
+        @RequestBody BormaReport updatedFields
+) {
+    return bormaReportService.patchReport(id, updatedFields);
+}
+    
+
+    // 3️⃣ Get BORMA reports by tenant + employee
+    // @GetMapping("/tenant/{tenantId}/employee/{employeeId}")
+    // public List<BormaReportDTO> getReportsByTenantAndEmployee(
+    //         @PathVariable Long tenantId,
+    //         @PathVariable Long employeeId) {
+
+    //     return bormaReportService.getReportsByTenantAndEmployee(tenantId, employeeId);
+    // }
+
+    // // 4️⃣ Get BORMA reports by date
+    // @GetMapping("/tenant/{tenantId}/date/{date}")
+    // public List<BormaReportDTO> getReportsByDate(
+    //         @PathVariable Long tenantId,
+    //         @PathVariable String date) {
+
+    //     return bormaReportService.getReportsByDate(tenantId, date);
+    // }
+
+    // // 5️⃣ Delete BORMA report
+    // @DeleteMapping("/{id}")
+    // public String deleteBormaReport(@PathVariable Long id) {
+    //     bormaReportService.deleteBormaReport(id);
+    //     return "Borma report deleted successfully";
+    // }
+}
+

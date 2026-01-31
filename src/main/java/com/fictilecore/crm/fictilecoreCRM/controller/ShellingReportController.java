@@ -1,12 +1,16 @@
 package com.fictilecore.crm.fictilecoreCRM.controller;
 
+import com.fictilecore.crm.fictilecoreCRM.dto.RoastingReportResponse;
 import com.fictilecore.crm.fictilecoreCRM.dto.ShellingDaySummaryDTO;
 import com.fictilecore.crm.fictilecoreCRM.dto.ShellingReportDTO;
+import com.fictilecore.crm.fictilecoreCRM.dto.ShellingReportResponseDTO;
 import com.fictilecore.crm.fictilecoreCRM.entity.ShellingReport;
 import com.fictilecore.crm.fictilecoreCRM.mapper.MonthlyShellingResponse;
 import com.fictilecore.crm.fictilecoreCRM.service.ShellingReportService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -92,7 +96,7 @@ public class ShellingReportController {
     }
 
     // -------------------- PATCH REPORT (PARTIAL UPDATE) --------------------
-    @PatchMapping("/tenant/{tenantId}/{id}")
+    @PatchMapping("/tenant/{tenantId}/report/{id}")
     public ShellingReport patchReport(
             @PathVariable Long tenantId,
             @PathVariable Long id,
@@ -110,4 +114,22 @@ public class ShellingReportController {
         shellingReportService.deleteReport(tenantId, id);
         return "Shelling report deleted successfully";
     }
+
+
+    @GetMapping("/ViewEmplyeeUpdates")
+public ResponseEntity<List<ShellingReportResponseDTO>> getRoastingReports(
+        @RequestParam Long tenantId,
+        @RequestParam Long employeeId,
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        LocalDate date
+) {
+    List<ShellingReportResponseDTO> reports =
+            shellingReportService.getReportsByTenantEmployeeAndDate(
+                    tenantId, employeeId, date
+            );
+
+    return ResponseEntity.ok(reports);
+}
+
 }

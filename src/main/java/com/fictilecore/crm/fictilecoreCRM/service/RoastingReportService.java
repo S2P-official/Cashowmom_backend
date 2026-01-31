@@ -205,4 +205,20 @@ public class RoastingReportService {
         dto.setCuttingLine(report.getCuttingLine());
         return dto;
     }
+
+ public List<RoastingReportResponse> getReportsByTenantEmployeeAndDate(
+        Long tenantId,
+        Long employeeId,
+        LocalDate date
+) {
+    // Use the fixed repository query
+    List<RoastingReport> reports = roastingRepository
+            .findReportsByTenantEmployeeAndDate(tenantId, employeeId, date);
+
+    // Convert to DTO
+    return reports.stream()
+            .map(RoastingReportResponse::fromEntity)
+            .toList();
+}
+
 }

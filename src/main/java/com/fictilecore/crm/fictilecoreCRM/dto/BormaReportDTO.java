@@ -1,54 +1,42 @@
 package com.fictilecore.crm.fictilecoreCRM.dto;
 
-import lombok.*;
-import java.time.LocalDate;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class BormaReportDTO {
 
-    private Long id;
-    private LocalDate date;
+  
 
-    private String lot;
-    private String size;
-    private String origin;
-    private Double perBag;
+    private String id;
+    private String lotMark;
+    private String origin; // e.g., GHANA
+    private Double perBagWeight;
+    private String sizeRange; 
+    private Double countPerKg;
+    private String status;
+    private String cookingTime;
+    private String roasterName;
+    private String moistureAfterRoasting;
+    private String cuttingLine;
+    private String AfterBormaKernalMoisture;
 
-    private Double shelledKernelMoisture;
-    private String afterBormaKernalMoisture;
-    private String aormaTimeDuration;
-    private Double bormaTemperature;
-
-    private Double wholesReceived;
-    private Double brokensReceived;
-    private Double totalReceived;
-
-    private Double wholesFinalafterborama;
-    private Double wholesShortafterborama;
-
-    private Double wholesPercent;
-    private Double wholesShortPercent;
-
-    private Double brokensFinal;
-    private Double brokensShort;
-
-    private Double brokensPercent;
-    private Double brokensShortPercent;
-
-    private Double totalIssued;
-    private Double totalFinal;
-    private Double totalShort;
-
-    private Double totalPercent;
-    private Double totalShortPercent;
-
-    private Long tenantId;
-    private Long employeeId;
-    public Double getShortFinalafterborama() {
-        throw new UnsupportedOperationException("Unimplemented method 'getShortFinalafterborama'");
-    }
+    private Double wholes;
+    private Double broken;
+    private Double rejection;
+    private Double uncut;
+    private Double partly;
+    private Double total;
+    private String BormaTimeDuration;
+    private String BormaTemperature;
+    private Double aftrBormaWholes;
+    private Double aftrBormaBrokens;
+    private Double shortWholes;
+    private Double shortBrokens;
+   
 }

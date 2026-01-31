@@ -2,9 +2,12 @@ package com.fictilecore.crm.fictilecoreCRM.controller;
 
 import com.fictilecore.crm.fictilecoreCRM.dto.RoastingReportDTO;
 import com.fictilecore.crm.fictilecoreCRM.dto.RoastingReportDaySummaryResponse;
+import com.fictilecore.crm.fictilecoreCRM.dto.RoastingReportResponse;
 import com.fictilecore.crm.fictilecoreCRM.entity.RoastingReport;
 import com.fictilecore.crm.fictilecoreCRM.service.RoastingReportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -80,4 +83,24 @@ public class RoastingReportController {
     public List<RoastingReport> getAllPendingReports(@PathVariable Long tenantId) {
         return roastingReportService.getAllExceptCompletedReportsByTenant(tenantId);
     }
+
+
+@GetMapping("/ViewEmplyeeUpdates")
+public ResponseEntity<List<RoastingReportResponse>> getRoastingReports(
+        @RequestParam Long tenantId,
+        @RequestParam Long employeeId,
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        LocalDate date
+) {
+    List<RoastingReportResponse> reports =
+            roastingReportService.getReportsByTenantEmployeeAndDate(
+                    tenantId, employeeId, date
+            );
+
+    return ResponseEntity.ok(reports);
+}
+
+
+
 }

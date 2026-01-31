@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
 import com.fictilecore.crm.fictilecoreCRM.entity.RoastingReport;
 
 public interface RoastingRepository extends JpaRepository<RoastingReport, Long> {
@@ -26,4 +27,25 @@ public interface RoastingRepository extends JpaRepository<RoastingReport, Long> 
     // Get all non-completed reports for a tenant
     @Query("SELECT r FROM RoastingReport r WHERE r.tenant.id = :tenantId AND (r.status IS NULL OR r.status <> 'Completed')")
     List<RoastingReport> findAllExceptCompletedByTenant(@Param("tenantId") Long tenantId);
+
+    // Tenant and Employee filtering with optional date
+    @Query("""
+        SELECT r FROM RoastingReport r
+        WHERE r.tenant.id = :tenantId
+          AND r.employee.id = :employeeId
+          AND (:date IS NULL OR r.date = :date)
+    """)
+    List<RoastingReport> findReportsByTenantEmployeeAndDate(
+        @Param("tenantId") Long tenantId,
+        @Param("employeeId") Long employeeId,
+        @Param("date") LocalDate date
+    );
+
+    // All pending reports for a tenant
+    @Query("""
+        SELECT r FROM RoastingReport r
+        WHERE r.tenant.id = :tenantId
+          AND (r.status IS NULL OR r.status <> 'Completed')
+    """)
+    List<RoastingReport> findAllPendingByTenant(@Param("tenantId") Long tenantId);
 }

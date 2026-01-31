@@ -27,4 +27,18 @@ public interface ShellingReportRepository extends JpaRepository<ShellingReport, 
            "WHERE s.tenant.id = :tenantId " +
            "AND (s.status IS NULL OR s.status <> 'Completed')")
     List<ShellingReport> findAllExceptCompletedByTenant(@Param("tenantId") Long tenantId);
+
+    
+    // Tenant and Employee filtering with optional date
+    @Query("""
+        SELECT r FROM ShellingReport r
+        WHERE r.tenant.id = :tenantId
+          AND r.employee.id = :employeeId
+          AND (:date IS NULL OR r.date = :date)
+    """)
+    List<ShellingReport> findReportsByTenantEmployeeAndDate(
+        @Param("tenantId") Long tenantId,
+        @Param("employeeId") Long employeeId,
+        @Param("date") LocalDate date
+    );
 }

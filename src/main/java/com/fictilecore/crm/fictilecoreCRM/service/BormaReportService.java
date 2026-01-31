@@ -1,191 +1,208 @@
 package com.fictilecore.crm.fictilecoreCRM.service;
 
-import com.fictilecore.crm.fictilecoreCRM.dto.BormaDaySummaryResponse;
-import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportResponseDTO;
+import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportDTO;
+import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportDaySummaryResponse;
+import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportResponse;
+import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportDTO;
+import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportDaySummaryResponse;
+import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportResponse;
 import com.fictilecore.crm.fictilecoreCRM.entity.BormaReport;
+import com.fictilecore.crm.fictilecoreCRM.entity.CalibrationReport;
+import com.fictilecore.crm.fictilecoreCRM.entity.Employee;
+import com.fictilecore.crm.fictilecoreCRM.entity.Tenant;
 import com.fictilecore.crm.fictilecoreCRM.repository.BormaReportRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fictilecore.crm.fictilecoreCRM.repository.EmployeeRepository;
+import com.fictilecore.crm.fictilecoreCRM.repository.TenantRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class BormaReportService {
 
-    @Autowired
-    private BormaReportRepository repo;
+    private final SubscriptionService subscriptionService;
+    private final TenantRepository tenantRepository;
+    private final EmployeeRepository employeeRepository;
+    private final BormaReportRepository bormaReportRepository;
 
-    @Autowired
-    private SubscriptionService subscriptionService; // ✅ Validate tenant subscriptions
-
-    // ---------------- CREATE ----------------
-    public BormaReport save(BormaReport report) {
-        Long tenantId = report.getTenant().getId();
+    // ---------------- CREATE MULTIPLE REPORTS ----------------
+    public List<BormaReport> createReport(
+            Long tenantId,
+            Long employeeId,
+            List<BormaReport> reports
+    ) {
+        // Validate tenant subscription
         subscriptionService.validateTenantSubscription(tenantId);
 
-        calculate(report);
-        return repo.save(report);
-    }
+        // Fetch tenant
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new RuntimeException("Tenant not found: " + tenantId));
 
-    // ---------------- UPDATE ----------------
-    public BormaReport update(Long tenantId, Long id, BormaReport updated) {
-        subscriptionService.validateTenantSubscription(tenantId);
+        // Fetch employee (mandatory)
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found: " + employeeId));
 
-        BormaReport existing = repo.findByIdAndTenant_Id(id, tenantId)
-                .orElseThrow(() -> new RuntimeException("Report not found"));
-
-        updated.setId(id);
-        updated.setTenant(existing.getTenant());
-        updated.setEmployee(existing.getEmployee());
-
-        calculate(updated);
-        return repo.save(updated);
-    }
-
-    // ---------------- GET ----------------
-    public List<BormaReport> getAll(Long tenantId) {
-        subscriptionService.validateTenantSubscription(tenantId);
-        return repo.findByTenant_Id(tenantId);
-    }
-
-    public List<BormaReport> getByTenantAndEmployee(Long tenantId, Long employeeId) {
-        subscriptionService.validateTenantSubscription(tenantId);
-        return repo.findByTenant_IdAndEmployee_Id(tenantId, employeeId);
-    }
-
-    public List<BormaReport> getByDate(Long tenantId, LocalDate date) {
-        subscriptionService.validateTenantSubscription(tenantId);
-        return repo.findByTenant_IdAndDate(tenantId, date);
-    }
-
-    public List<BormaReport> getAllExceptCompletedReportsByTenant(Long tenantId) {
-        subscriptionService.validateTenantSubscription(tenantId);
-        return repo.findAllExceptCompletedByTenant(tenantId);
-    }
-
-    // ---------------- PATCH ----------------
-    public BormaReport patchStatus(Long tenantId, Long id, String status) {
-        subscriptionService.validateTenantSubscription(tenantId);
-
-        BormaReport existing = repo.findByIdAndTenant_Id(id, tenantId)
-                .orElseThrow(() -> new RuntimeException("Report not found"));
-
-        existing.setStatus(status);
-        return repo.save(existing);
-    }
-
-    public BormaReport patchReport(Long tenantId, Long id, BormaReport updatedFields) {
-        subscriptionService.validateTenantSubscription(tenantId);
-
-        BormaReport existing = repo.findByIdAndTenant_Id(id, tenantId)
-                .orElseThrow(() -> new RuntimeException("Report not found"));
-
-        // Update only fields that are not null
-        if (updatedFields.getWholesReceived() != null) existing.setWholesReceived(updatedFields.getWholesReceived());
-        if (updatedFields.getBrokensReceived() != null) existing.setBrokensReceived(updatedFields.getBrokensReceived());
-        if (updatedFields.getWholesCountAfterBorma() != null) existing.setWholesCountAfterBorma(updatedFields.getWholesCountAfterBorma());
-        if (updatedFields.getWholesShortCountAfterBorma() != null) existing.setWholesShortCountAfterBorma(updatedFields.getWholesShortCountAfterBorma());
-        if (updatedFields.getBrokensCountAfterBorma() != null) existing.setBrokensCountAfterBorma(updatedFields.getBrokensCountAfterBorma());
-        if (updatedFields.getBrokensShortCountAfterBorma() != null) existing.setBrokensShortCountAfterBorma(updatedFields.getBrokensShortCountAfterBorma());
-
-        calculate(existing);
-        return repo.save(existing);
-    }
-
-    // ---------------- DELETE ----------------
-    public void delete(Long tenantId, Long id) {
-        subscriptionService.validateTenantSubscription(tenantId);
-        getById(tenantId, id);
-        repo.deleteById(id);
-    }
-
-    public void deleteById(Long id) {
-        repo.deleteById(id);
-    }
-
-    public BormaReport getById(Long tenantId, Long id) {
-        subscriptionService.validateTenantSubscription(tenantId);
-        return repo.findByIdAndTenant_Id(id, tenantId)
-                .orElseThrow(() -> new RuntimeException("Report not found"));
-    }
-
-    // ---------------- DAY SUMMARY ----------------
-    public BormaDaySummaryResponse getDaySummary(Long tenantId, LocalDate date) {
-        subscriptionService.validateTenantSubscription(tenantId);
-
-        List<BormaReport> reports = repo.findByTenant_IdAndDate(tenantId, date);
-
-        double totalIssued = reports.stream().mapToDouble(r -> safe(r.getTotalIssued())).sum();
-        double totalFinal = reports.stream().mapToDouble(r -> safe(r.getTotalFinal())).sum();
-        double totalShort = reports.stream().mapToDouble(r -> safe(r.getTotalShort())).sum();
-
-        double totalPercent = totalIssued > 0 ? (totalFinal / totalIssued) * 100 : 0;
-        double totalShortPercent = totalIssued > 0 ? (totalShort / totalIssued) * 100 : 0;
-
-        // Map each BormaReport to BormaReportResponseDTO
-        List<BormaReportResponseDTO> rows = reports.stream().map(r -> {
-            BormaReportResponseDTO dto = new BormaReportResponseDTO();
-            dto.setId(r.getId());
-            dto.setWholesFinalafterboramaPercent(r.getWholesFinalAfterBormaPercent());
-            dto.setWholesShortafterboramaPercent(r.getWholesShortAfterBormaPercent());
-            dto.setTotalPercentOfBrokensAfterBorma(r.getTotalPercentOfBrokensAfterBorma());
-            dto.setTotalPercentOfShortBrokensAfterBorma(r.getTotalPercentOfShortBrokensAfterBorma());
-            dto.setTotalIssued(r.getTotalIssued());
-            dto.setTotalFinal(r.getTotalFinal());
-            dto.setTotalShort(r.getTotalShort());
-            dto.setTotalPercent(r.getTotalPercent());
-            dto.setTotalShortPercent(r.getTotalShortPercent());
-            return dto;
-        }).toList();
-
-        return new BormaDaySummaryResponse(
-                date,
-                totalIssued,
-                totalFinal,
-                totalShort,
-                totalPercent,
-                totalShortPercent,
-                rows
-        );
-    }
-
-    // ---------------- CALCULATIONS ----------------
-    private void calculate(BormaReport r) {
-        double wholesReceived = safe(r.getWholesReceived());
-        double brokensReceived = safe(r.getBrokensReceived());
-
-        double wholes = safe(r.getWholesCountAfterBorma());
-        double wholesShort = safe(r.getWholesShortCountAfterBorma());
-
-        double brokens = safe(r.getBrokensCountAfterBorma());
-        double brokensShort = safe(r.getBrokensShortCountAfterBorma());
-
-        if (wholesReceived > 0) {
-            r.setWholesFinalAfterBormaPercent((wholes / wholesReceived) * 100);
-            r.setWholesShortAfterBormaPercent((wholesShort / wholesReceived) * 100);
+        // Set tenantId and employee for each report
+        for (BormaReport report : reports) {
+            report.setTenant(tenant);
+            report.setEmployee(employee);
         }
 
-        if (brokensReceived > 0) {
-            r.setTotalPercentOfBrokensAfterBorma((brokens / brokensReceived) * 100);
-            r.setTotalPercentOfShortBrokensAfterBorma((brokensShort / brokensReceived) * 100);
-        }
-
-        double totalIssued = wholesReceived + brokensReceived;
-        double totalFinal = wholes + brokens;
-        double totalShort = wholesShort + brokensShort;
-
-        r.setTotalIssued(totalIssued);
-        r.setTotalFinal(totalFinal);
-        r.setTotalShort(totalShort);
-
-        if (totalIssued > 0) {
-            r.setTotalPercent((totalFinal / totalIssued) * 100);
-            r.setTotalShortPercent((totalShort / totalIssued) * 100);
-        }
+        // Save all reports
+        return bormaReportRepository.saveAll(reports);
     }
 
-    private double safe(Double v) {
-        return v == null ? 0 : v;
+    // Optionally, you can add a GET method
+    public List<BormaReport> getReportsByTenant(Long tenantId) {
+        return bormaReportRepository.findByTenant_Id(tenantId);
     }
+
+   public List<BormaReportDTO> getReportsByTenantAndEmployee(
+            Long tenantId,
+            Long employeeId
+    ) {
+        List<BormaReport> reports =
+                bormaReportRepository.findByTenant_IdAndEmployee_Id(tenantId, employeeId);
+
+        return reports.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+   private BormaReportDTO toDTO(BormaReport report) {
+
+    if (report == null) {
+        return null;
+    }
+
+    BormaReportDTO dto = new BormaReportDTO();
+
+    dto.setId(report.getId() != null ? report.getId().toString() : null);
+    dto.setLotMark(report.getLotMark());
+    dto.setOrigin(report.getOrigin());
+    dto.setPerBagWeight(report.getPerBagWeight());
+    dto.setSizeRange(report.getSizeRange());
+    dto.setCountPerKg(report.getCountPerKg());
+    dto.setStatus(report.getStatus());
+
+    dto.setCookingTime(report.getCookingTime());
+    dto.setRoasterName(report.getRoasterName());
+    dto.setMoistureAfterRoasting(report.getMoistureAfterRoasting());
+    dto.setCuttingLine(report.getCuttingLine());
+    dto.setAfterBormaKernalMoisture(report.getAfterBormaKernalMoisture());
+
+    dto.setWholes(report.getWholes());
+    dto.setBroken(report.getBroken());
+    dto.setRejection(report.getRejection());
+    dto.setUncut(report.getUncut());
+    dto.setPartly(report.getPartly());
+    dto.setTotal(report.getTotal());
+
+    dto.setBormaTimeDuration(report.getBormaTimeDuration());
+    dto.setBormaTemperature(report.getBormaTemperature());
+
+    dto.setAftrBormaWholes(report.getAftrBormaWholes());
+    dto.setAftrBormaBrokens(report.getAftrBormaBrokens());
+
+    dto.setShortWholes(report.getShortWholes());
+    dto.setShortBrokens(report.getShortBrokens());
+
+    return dto;
+}
+
+public BormaReportDaySummaryResponse getReportsByTenantAndDate(
+        Long tenantId,
+        LocalDate date
+) {
+    List<BormaReport> reports =
+            bormaReportRepository.findByTenant_IdAndDate(tenantId, date);
+
+    // 1️⃣ Row DTOs
+    List<BormaReportResponse> reportDtos = reports.stream()
+            .map(report -> new BormaReportResponse(
+                    report.getId(),
+                    report.getDate(),
+
+                    report.getLotMark(),
+                    report.getOrigin(),
+                    report.getPerBagWeight(),
+                    report.getSizeRange(),
+                    report.getCountPerKg(),
+
+                    report.getCookingTime(),
+                    report.getRoasterName(),
+                    report.getMoistureAfterRoasting(),
+                    report.getCuttingLine(),
+                    report.getAfterBormaKernalMoisture(),
+
+                    report.getWholes(),
+                    report.getBroken(),
+                    report.getRejection(),
+                    report.getUncut(),
+                    report.getPartly(),
+                    report.getTotal(),
+
+                    report.getBormaTimeDuration(),
+                    report.getBormaTemperature(),
+
+                    report.getAftrBormaWholes(),
+                    report.getAftrBormaBrokens(),
+                    report.getShortWholes(),
+                    report.getShortBrokens(),
+
+                    report.getTotalWholes(),
+                    report.getTotalShort(),
+
+                    report.getCountPerKg(),
+                    report.getEmployee() != null
+                            ? report.getEmployee().getEmployee_name()
+                            : null
+            ))
+            .toList();
+
+    // 2️⃣ Total production (day)  ❌ you were using productionQty which does not exist in DTO
+    double totalWholes = reports.stream()
+            .mapToDouble(r -> r.getTotalWholes() != null ? r.getTotalWholes() : 0)
+            .sum();
+
+    // 3️⃣ Size-wise production (based on totalWholes)
+    Map<String, Double> sizeWiseProductionQty =
+            reports.stream()
+                    .collect(Collectors.groupingBy(
+                            BormaReport::getSizeRange,
+                            Collectors.summingDouble(
+                                    r -> r.getTotalWholes() != null ? r.getTotalWholes() : 0
+                            )
+                    ));
+
+    return new BormaReportDaySummaryResponse(
+            date,
+            totalWholes,
+            sizeWiseProductionQty,
+            reportDtos
+    );
+}
+
+  public BormaReport patchReport(Long id, BormaReport updatedFields) {
+        BormaReport existing = bormaReportRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Report not found with id: " + id));
+
+        if (updatedFields.getDate() != null) existing.setDate(updatedFields.getDate());
+        if (updatedFields.getLotMark() != null) existing.setLotMark(updatedFields.getLotMark());
+        if (updatedFields.getOrigin() != null) existing.setOrigin(updatedFields.getOrigin());
+        if (updatedFields.getPerBagWeight() != null) existing.setPerBagWeight(updatedFields.getPerBagWeight());
+        if (updatedFields.getSizeRange() != null) existing.setSizeRange(updatedFields.getSizeRange());
+         if (updatedFields.getCountPerKg() != null) existing.setCountPerKg(updatedFields.getCountPerKg());
+        if (updatedFields.getStatus() != null) existing.setStatus(updatedFields.getStatus());
+        if (updatedFields.getTenant() != null) existing.setTenant(updatedFields.getTenant());
+        if (updatedFields.getEmployee() != null) existing.setEmployee(updatedFields.getEmployee());
+
+        return bormaReportRepository.save(existing);
+    }
+
+
 }
