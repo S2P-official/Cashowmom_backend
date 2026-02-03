@@ -7,8 +7,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "peeling_report")
-@Getter
-@Setter
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -16,8 +15,8 @@ public class PeelingReport extends BaseTenantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+   
     private Long id;
-
     private LocalDate date;
     private String lotMark;
     private String origin; // e.g., GHANA
@@ -25,62 +24,156 @@ public class PeelingReport extends BaseTenantEntity {
     private Double issuedWholes;
     private Double issuedBroken;
     private Double totalIssued;
-    private Double moisture;
+    private Double wwPeeledKgs;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public String getLotMark() {
+        return lotMark;
+    }
+
+    public void setLotMark(String lotMark) {
+        this.lotMark = lotMark;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
+    public Double getIssuedWholes() {
+        return issuedWholes;
+    }
+
+    public void setIssuedWholes(Double issuedWholes) {
+        this.issuedWholes = issuedWholes;
+    }
+
+    public Double getIssuedBroken() {
+        return issuedBroken;
+    }
+
+    public void setIssuedBroken(Double issuedBroken) {
+        this.issuedBroken = issuedBroken;
+    }
+
+    public Double getTotalIssued() {
+        return totalIssued;
+    }
+
+    public void setTotalIssued(Double totalIssued) {
+        this.totalIssued = totalIssued;
+    }
+
+    public Double getWwPeeledKgs() {
+        return wwPeeledKgs;
+    }
+
+    public void setWwPeeledKgs(Double wwPeeledKgs) {
+        this.wwPeeledKgs = wwPeeledKgs;
+    }
+
+    public Double getaddTestKgs() {
+        return addTestKgs;
+    }
+
+    public void setAddTestKgs(Double addTestKgs) {
+        this.addTestKgs = addTestKgs;
+    }
+
+    public Double getUnPeeledKgs() {
+        return unPeeledKgs;
+    }
+
+    public void setUnPeeledKgs(Double unPeeledKgs) {
+        this.unPeeledKgs = unPeeledKgs;
+    }
+
+    public Double getBrokenAfterPeeling() {
+        return brokenAfterPeeling;
+    }
+
+    public void setBrokenAfterPeeling(Double brokenAfterPeeling) {
+        this.brokenAfterPeeling = brokenAfterPeeling;
+    }
+
+    public Double getSauPl() {
+        return sauPl;
+    }
+
+    public void setSauPl(Double sauPl) {
+        this.sauPl = sauPl;
+    }
+
+    public Double getRejectionAfterPeeled() {
+        return rejectionAfterPeeled;
+    }
+
+    public void setRejectionAfterPeeled(Double rejectionAfterPeeled) {
+        this.rejectionAfterPeeled = rejectionAfterPeeled;
+    }
+
+    public Double getHusk() {
+        return husk;
+    }
+
+    public void setHusk(Double husk) {
+        this.husk = husk;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
+    private Double addTestKgs;
+    private Double unPeeledKgs;
+    private Double brokenAfterPeeling;
+    private Double sauPl;
+    private Double rejectionAfterPeeled;
+    private Double husk;
+    private String status;
+    
+
+
 
     // --- Whole / Broken details ---
-    private Double wwPeeledKgs;
-    private Double wwPeeledPercent;
-
-    private Double addTestaKgs;
-    private Double addTestaPercent;
-
-    private Double unpeeledKgs;
-    private Double unpeeledPercent;
-
-    private Double brokensKgs;
-    private Double brokensPercent;
-
-    private Double sauPlKgs;
-    private Double sauPlPercent;
-
-    private Double rejectionKgs;
-
-    private Double totalKgs;
-    private Double totalPercent;
-
-    // --- Unpeeled & Testa Work ---
-    private Double unpeeledReceived;
-    private Double testaReceived;
-
-    // --- Unpeeled Work & Machine Settings ---
-    private Double unpeeledWholes;
-    private Double unpeeledBroken;
-    private Double unpeeledRejection;
-    private Double unpeeledTotal;
-
-    private Double shaft;
-    private Double peelerDrumSpeed;
-    private Double airPeeler;
-    private Double airPressure;
-
-    // --- Grading Summary ---
-    private Double wholeTotal;
-    private Double wholePercent;
-
-    private Double brokenTotal;
-    private Double brokenPercent;
-    private Double brokenSubTotal;
-
-    private Double rejectionTotal;
-    private Double rejectionPercent;
-
-    private Double husk;
-    private Double huskPercent;
-
-    private Double grandTotal;
-    private Double gradeDiff;
-    private Double huskShortPercent;
-
+    
     // --- Relations ---
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "employee_id", nullable = false)
@@ -93,5 +186,10 @@ public class PeelingReport extends BaseTenantEntity {
                 "Tenant ID must be set before persisting PeelingReport"
             );
         }
+    }
+
+    public Object TotalPeelingResultl() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'TotalPeelingResultl'");
     }
 }

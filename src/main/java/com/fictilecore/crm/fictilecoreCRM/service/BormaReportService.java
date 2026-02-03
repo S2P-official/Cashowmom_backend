@@ -3,11 +3,9 @@ package com.fictilecore.crm.fictilecoreCRM.service;
 import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportDTO;
 import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportDaySummaryResponse;
 import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportResponse;
-import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportDTO;
-import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportDaySummaryResponse;
-import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportResponse;
+
 import com.fictilecore.crm.fictilecoreCRM.entity.BormaReport;
-import com.fictilecore.crm.fictilecoreCRM.entity.CalibrationReport;
+
 import com.fictilecore.crm.fictilecoreCRM.entity.Employee;
 import com.fictilecore.crm.fictilecoreCRM.entity.Tenant;
 import com.fictilecore.crm.fictilecoreCRM.repository.BormaReportRepository;
@@ -93,7 +91,7 @@ public class BormaReportService {
     dto.setRoasterName(report.getRoasterName());
     dto.setMoistureAfterRoasting(report.getMoistureAfterRoasting());
     dto.setCuttingLine(report.getCuttingLine());
-    dto.setAfterBormaKernalMoisture(report.getAfterBormaKernalMoisture());
+    dto.setAfterBormaKernalMoisture(report.getAfterBormaKernelMoisture());
 
     dto.setWholes(report.getWholes());
     dto.setBroken(report.getBroken());
@@ -137,7 +135,7 @@ public BormaReportDaySummaryResponse getReportsByTenantAndDate(
                     report.getRoasterName(),
                     report.getMoistureAfterRoasting(),
                     report.getCuttingLine(),
-                    report.getAfterBormaKernalMoisture(),
+                    report.getAfterBormaKernelMoisture(),
 
                     report.getWholes(),
                     report.getBroken(),
@@ -204,5 +202,16 @@ public BormaReportDaySummaryResponse getReportsByTenantAndDate(
         return bormaReportRepository.save(existing);
     }
 
+   public List<BormaReport> getAllExceptCompletedReportsByTenant(Long tenantId) {
+        return bormaReportRepository.findAllExceptCompletedByTenant( tenantId);
+    }
+
+  public List<BormaReportResponse> getReportsByTenantEmployeeAndDate(
+        Long tenantId,
+        Long employeeId,
+        LocalDate date
+) {
+    return bormaReportRepository.findReportsByTenantEmployeeAndDate(tenantId, employeeId, date);
+}
 
 }

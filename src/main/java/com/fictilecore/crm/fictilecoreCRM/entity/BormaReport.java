@@ -33,7 +33,7 @@ public class BormaReport extends BaseTenantEntity{
     private String roasterName;
     private String moistureAfterRoasting;
     private String cuttingLine;
-    private String AfterBormaKernalMoisture;
+    private String afterBormaKernelMoisture;
 
     private Double wholes;
     private Double broken;

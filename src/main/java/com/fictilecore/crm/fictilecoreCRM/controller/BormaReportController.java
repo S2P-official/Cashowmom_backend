@@ -2,16 +2,14 @@ package com.fictilecore.crm.fictilecoreCRM.controller;
 
 import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportDTO;
 import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportDaySummaryResponse;
-import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportDTO;
-import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportDaySummaryResponse;
+import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportResponse;
 import com.fictilecore.crm.fictilecoreCRM.entity.BormaReport;
-import com.fictilecore.crm.fictilecoreCRM.entity.CalibrationReport;
-import com.fictilecore.crm.fictilecoreCRM.repository.BormaReportRepository;
 import com.fictilecore.crm.fictilecoreCRM.service.BormaReportService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -86,6 +84,28 @@ public BormaReport patchReport(
     return bormaReportService.patchReport(id, updatedFields);
 }
     
+    
+// ✅ Get reports for a tenant where status is not "Completed"
+// ✅ Get all reports for a tenant except those with status 'Completed'
+@GetMapping("/tenant/{tenantId}/pending")
+public List<BormaReport> getAllExceptCompletedReports(@PathVariable Long tenantId) {
+    return bormaReportService.getAllExceptCompletedReportsByTenant(tenantId);
+}
+
+
+
+@GetMapping
+public ResponseEntity<List<BormaReportResponse>> getReports(
+        @RequestParam Long tenantId,
+        @RequestParam Long employeeId,
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        LocalDate date
+) {
+    List<BormaReportResponse> reports = bormaReportService
+            .getReportsByTenantEmployeeAndDate(tenantId, employeeId, date);
+    return ResponseEntity.ok(reports);
+}
 
     // 3️⃣ Get BORMA reports by tenant + employee
     // @GetMapping("/tenant/{tenantId}/employee/{employeeId}")
