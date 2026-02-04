@@ -1,5 +1,4 @@
 package com.fictilecore.crm.fictilecoreCRM.controller;
-import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportResponse;
 import com.fictilecore.crm.fictilecoreCRM.dto.PeelingReportDTO;
 import com.fictilecore.crm.fictilecoreCRM.dto.PeelingReportDaySummaryResponse;
 import com.fictilecore.crm.fictilecoreCRM.dto.PeelingReportResponse;
@@ -23,14 +22,18 @@ public class PeelingReportController {
     private PeelingReportService peelingReportService;
 
     // -------------------- CREATE REPORT --------------------
-  @PostMapping("/tenant/{tenantId}/employee/{employeeId}")
-    public List<PeelingReport> createReport(
-            @PathVariable Long tenantId,
-            @PathVariable(required = false) Long employeeId,
-            @RequestBody List<PeelingReport> report
-    ) {
-        return peelingReportService.createReports(tenantId, employeeId, report);
-    }
+@PostMapping("/tenant/{tenantId}/employee/{employeeId}")
+public ResponseEntity<PeelingReport> create(
+        @PathVariable Long tenantId,
+        @PathVariable Long employeeId,
+        @RequestBody PeelingReport report
+) {
+    PeelingReport saved =
+            peelingReportService.createReport(tenantId, employeeId, report);
+
+    return ResponseEntity.ok(saved);
+}
+
    
     // -------------------- GET ALL BY TENANT --------------------
     @GetMapping("/tenant/{tenantId}")

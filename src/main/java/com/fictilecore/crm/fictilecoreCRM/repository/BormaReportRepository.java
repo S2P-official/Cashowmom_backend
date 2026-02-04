@@ -2,6 +2,7 @@ package com.fictilecore.crm.fictilecoreCRM.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportResponse;
 import com.fictilecore.crm.fictilecoreCRM.entity.BormaReport;
+import com.fictilecore.crm.fictilecoreCRM.entity.RoastingReport;
+import com.fictilecore.crm.fictilecoreCRM.entity.Tenant;
 
 @Repository
 public interface BormaReportRepository extends JpaRepository<BormaReport, Long>  {
@@ -34,20 +37,8 @@ SELECT new com.fictilecore.crm.fictilecoreCRM.dto.BormaReportResponse(
     c.date,
     c.lotMark,
     c.origin,
-    c.perBagWeight,
     c.sizeRange,
-    c.countPerKg,
-    c.cookingTime,
-    c.roasterName,
-    c.moistureAfterRoasting,
-    c.cuttingLine,
     c.afterBormaKernelMoisture,
-    c.wholes,
-    c.broken,
-    c.rejection,
-    c.uncut,
-    c.partly,
-    c.total,
     c.BormaTimeDuration,
     c.BormaTemperature,
     c.aftrBormaWholes,
@@ -72,6 +63,8 @@ List<BormaReportResponse> findReportsByTenantEmployeeAndDate(
     @Param("employeeId") Long employeeId,
     @Param("date") LocalDate date
 );
+
+  Optional<BormaReport> findByIdAndTenant_Id(Long reportId, Long tenantId);
 
 
 }

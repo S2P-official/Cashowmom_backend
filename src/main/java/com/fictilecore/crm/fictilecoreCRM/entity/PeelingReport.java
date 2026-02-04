@@ -25,6 +25,16 @@ public class PeelingReport extends BaseTenantEntity {
     private Double issuedBroken;
     private Double totalIssued;
     private Double wwPeeledKgs;
+     private Double addTestKgs;
+    private Double unPeeledKgs;
+    private Double brokenAfterPeeling;
+    private Double sauPl;
+    private Double rejectionAfterPeeled;
+    private Double husk;
+    private String status;
+
+
+
     public Long getId() {
         return id;
     }
@@ -161,13 +171,7 @@ public class PeelingReport extends BaseTenantEntity {
         this.employee = employee;
     }
 
-    private Double addTestKgs;
-    private Double unPeeledKgs;
-    private Double brokenAfterPeeling;
-    private Double sauPl;
-    private Double rejectionAfterPeeled;
-    private Double husk;
-    private String status;
+   
     
 
 

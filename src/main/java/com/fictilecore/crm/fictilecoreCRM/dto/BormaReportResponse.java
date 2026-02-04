@@ -14,32 +14,15 @@ public class BormaReportResponse {
     private String origin;
     private Double perBagWeight;
     private String sizeRange;
-    private Double countPerKg;
-
-    private String cookingTime;
-    private String roasterName;
-    private String moistureAfterRoasting;
-    private String cuttingLine;
     private String AfterBormaKernalMoisture;
-
-    private Double wholes;
-    private Double broken;
-    private Double rejection;
-    private Double uncut;
-    private Double partly;
-    private Double total;
-
     private String BormaTimeDuration;
     private String BormaTemperature;
-
     private Double aftrBormaWholes;
     private Double aftrBormaBrokens;
     private Double shortWholes;
     private Double shortBrokens;
-
     private Double totalWholes;
     private Double totalShort;
-
     private Double noOfBags;
     private String employeeName;
 
@@ -50,20 +33,8 @@ public class BormaReportResponse {
             LocalDate date,
             String lotMark,
             String origin,
-            Double perBagWeight,
             String sizeRange,
-            Double countPerKg,
-            String cookingTime,
-            String roasterName,
-            String moistureAfterRoasting,
-            String cuttingLine,
             String AfterBormaKernalMoisture,
-            Double wholes,
-            Double broken,
-            Double rejection,
-            Double uncut,
-            Double partly, 
-            Double total,
             String BormaTimeDuration,
             String BormaTemperature,
             Double aftrBormaWholes,
@@ -81,18 +52,7 @@ public class BormaReportResponse {
         this.origin = origin;
         this.perBagWeight = perBagWeight;
         this.sizeRange = sizeRange;
-        this.countPerKg = countPerKg;
-        this.cookingTime = cookingTime;
-        this.roasterName = roasterName;
-        this.moistureAfterRoasting = moistureAfterRoasting;
-        this.cuttingLine = cuttingLine;
         this.AfterBormaKernalMoisture = AfterBormaKernalMoisture;
-        this.wholes = wholes;
-        this.broken = broken;
-        this.rejection = rejection;
-        this.uncut = uncut;
-        this.partly = partly;
-        this.total = total;
         this.BormaTimeDuration = BormaTimeDuration;
         this.BormaTemperature = BormaTemperature;
         this.aftrBormaWholes = aftrBormaWholes;

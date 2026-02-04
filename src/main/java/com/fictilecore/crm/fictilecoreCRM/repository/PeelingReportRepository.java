@@ -1,5 +1,4 @@
 package com.fictilecore.crm.fictilecoreCRM.repository;
-import com.fictilecore.crm.fictilecoreCRM.dto.CalibrationReportResponse;
 import com.fictilecore.crm.fictilecoreCRM.dto.PeelingReportResponse;
 import com.fictilecore.crm.fictilecoreCRM.entity.PeelingReport;
 import org.springframework.data.jpa.repository.JpaRepository;

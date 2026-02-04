@@ -116,35 +116,34 @@ public class PeelingReportService {
                 .collect(Collectors.toList());
     }
 
-    public PeelingReport createReport(Long tenantId, Long employeeId, PeelingReport report) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createReport'");
-    }
+  
 
     // ✅ CREATE REPORTS
     // -------------------------------------------------------
-    public List<PeelingReport> createReports(
-            Long tenantId,
-            Long employeeId,
-            List<PeelingReport> reports
-    ) {
-        Tenant tenant = tenantRepository.findById(tenantId)
-                .orElseThrow(() -> new RuntimeException("Tenant not found with ID: " + tenantId));
+   public PeelingReport createReport(
+        Long tenantId,
+        Long employeeId,
+        PeelingReport report
+) {
+    Tenant tenant = tenantRepository.findById(tenantId)
+            .orElseThrow(() ->
+                    new RuntimeException("Tenant not found with ID: " + tenantId));
 
-        Employee employee = null;
-        if (employeeId != null) {
-            employee = employeeRepository.findById(employeeId)
-                    .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
-        }
-
-        for (PeelingReport report : reports) {
-            report.setTenant(tenant);
-            report.setEmployee(employee);
-        }
-
-        return peelingReportRepository.saveAll(reports);
+    Employee employee = null;
+    if (employeeId != null) {
+        employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() ->
+                        new RuntimeException("Employee not found with ID: " + employeeId));
     }
-    
+
+    // ✅ SET RELATIONS
+    report.setTenant(tenant);
+    report.setEmployee(employee);
+
+    // ✅ SAVE SINGLE ENTITY
+    return peelingReportRepository.save(report);
+}
+
     public PeelingReportDTO toDTO(PeelingReport report) {
         if (report == null) return null;
 

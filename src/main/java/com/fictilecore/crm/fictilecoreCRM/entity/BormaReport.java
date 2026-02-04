@@ -27,20 +27,8 @@ public class BormaReport extends BaseTenantEntity{
     private String origin; // e.g., GHANA
     private Double perBagWeight;
     private String sizeRange; 
-    private Double countPerKg;
     private String status;
-    private String cookingTime;
-    private String roasterName;
-    private String moistureAfterRoasting;
-    private String cuttingLine;
     private String afterBormaKernelMoisture;
-
-    private Double wholes;
-    private Double broken;
-    private Double rejection;
-    private Double uncut;
-    private Double partly;
-    private Double total;
     private String BormaTimeDuration;
     private String BormaTemperature;
     private Double aftrBormaWholes;
@@ -65,7 +53,7 @@ public class BormaReport extends BaseTenantEntity{
         }
         if (getTenantId() == null) {
             throw new IllegalStateException(
-                "Tenant ID must be set before persisting ShellingReport"
+                "Tenant ID must be set before persisting BormaReport"
             );
         }
     }

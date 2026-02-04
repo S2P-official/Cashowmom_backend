@@ -79,7 +79,6 @@ public CalibrationReport patchReport(
 
 
 
-// ✅ Get reports for a tenant where status is not "Completed"
 // ✅ Get all reports for a tenant except those with status 'Completed'
 @GetMapping("/tenant/{tenantId}/pending")
 public List<CalibrationReport> getAllExceptCompletedReports(@PathVariable Long tenantId) {

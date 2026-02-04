@@ -1,8 +1,8 @@
 package com.fictilecore.crm.fictilecoreCRM.controller;
 
 import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportDTO;
-import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportDaySummaryResponse;
 import com.fictilecore.crm.fictilecoreCRM.dto.BormaReportResponse;
+import com.fictilecore.crm.fictilecoreCRM.dto.ShellingReportDTO;
 import com.fictilecore.crm.fictilecoreCRM.entity.BormaReport;
 import com.fictilecore.crm.fictilecoreCRM.service.BormaReportService;
 import lombok.RequiredArgsConstructor;
@@ -24,19 +24,17 @@ public class BormaReportController {
     private final BormaReportService bormaReportService;
 
 
-    
 
-    // 🔹 POST – Save Borma Report
-@PostMapping("/tenant/{tenantId}/employee/{employeeId}")
-public BormaReport createReport(
-        @PathVariable Long tenantId,
-        @PathVariable(required = false) Long employeeId,
-        @RequestBody BormaReport report
-) {
-    return bormaReportService
-            .createReport(tenantId, employeeId, List.of(report)) // wrap in List
-            .get(0); // return first (and only) report
-}
+    @PostMapping("/tenant/{tenantId}/employee/{employeeId}")
+    public BormaReportDTO createReport(
+            @PathVariable Long tenantId,
+            @PathVariable(required = false) Long employeeId,
+            @RequestBody BormaReportDTO reportDTO
+    ) {
+        return bormaReportService
+                .createReport(tenantId, employeeId, List.of(reportDTO))
+                .get(0);
+    }
 
 
 
@@ -61,29 +59,30 @@ public BormaReport createReport(
     }
 
     
-    // ✅ Get reports by date
-@GetMapping("/tenant/{tenantId}/date/{date}")
-public BormaReportDaySummaryResponse getReportsByTenantAndDate(
-        @PathVariable Long tenantId,
-        @PathVariable String date
-) {
-    return bormaReportService
-            .getReportsByTenantAndDate(tenantId, LocalDate.parse(date));
-}
+//     // ✅ Get reports by date
+// @GetMapping("/tenant/{tenantId}/date/{date}")
+// public BormaReportDaySummaryResponse getReportsByTenantAndDate(
+//         @PathVariable Long tenantId,
+//         @PathVariable String date
+// ) {
+//     return bormaReportService
+//             .getReportsByTenantAndDate(tenantId, LocalDate.parse(date));
+// }
 
 
 
 
     // ✅ Update report by ID
 // ✅ Partial update report by ID
-@PatchMapping("/{id}")
-public BormaReport patchReport(
-        @PathVariable Long id,
-        @RequestBody BormaReport updatedFields
-) {
-    return bormaReportService.patchReport(id, updatedFields);
-}
-    
+    @PatchMapping("/tenant/{tenantId}/report/{reportId}")
+    public BormaReport patchReport(
+            @PathVariable Long tenantId,
+            @PathVariable Long reportId,
+            @RequestBody BormaReport updatedFields
+    ) {
+        return bormaReportService.patchReport(tenantId, reportId, updatedFields);
+    }
+
     
 // ✅ Get reports for a tenant where status is not "Completed"
 // ✅ Get all reports for a tenant except those with status 'Completed'
@@ -93,7 +92,7 @@ public List<BormaReport> getAllExceptCompletedReports(@PathVariable Long tenantI
 }
 
 
-
+//Selecting data by Date
 @GetMapping
 public ResponseEntity<List<BormaReportResponse>> getReports(
         @RequestParam Long tenantId,
