@@ -20,17 +20,16 @@ import lombok.Setter;
 @Entity
 public class BormaReport extends BaseTenantEntity{
 
-       @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String lotMark;
-    private String origin; // e.g., GHANA
-    private Double perBagWeight;
+    private String origin;
     private String sizeRange; 
     private String status;
     private String afterBormaKernelMoisture;
-    private String BormaTimeDuration;
-    private String BormaTemperature;
+    private String bormaTimeDuration;
+    private String bormaTemperature;
     private Double aftrBormaWholes;
     private Double aftrBormaBrokens;
     private Double shortWholes;
@@ -57,4 +56,6 @@ public class BormaReport extends BaseTenantEntity{
             );
         }
     }
+
+
 }

@@ -87,7 +87,7 @@ public List<PeelingReport> getAllExceptCompletedReports(@PathVariable Long tenan
     }
 
 
-    @GetMapping
+    @GetMapping("/ViewEmplyeeUpdates")
 public ResponseEntity<List<PeelingReportResponse>> getReports(
         @RequestParam Long tenantId,
         @RequestParam Long employeeId,

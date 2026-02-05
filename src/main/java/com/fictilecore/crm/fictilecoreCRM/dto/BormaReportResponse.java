@@ -2,6 +2,8 @@ package com.fictilecore.crm.fictilecoreCRM.dto;
 
 import java.time.LocalDate;
 
+import com.fictilecore.crm.fictilecoreCRM.entity.BormaReport;
+
 import lombok.Getter;
 
 @Getter
@@ -14,9 +16,11 @@ public class BormaReportResponse {
     private String origin;
     private Double perBagWeight;
     private String sizeRange;
-    private String AfterBormaKernalMoisture;
-    private String BormaTimeDuration;
-    private String BormaTemperature;
+
+    private String afterBormaKernelMoisture;
+    private String bormaTimeDuration;
+    private String bormaTemperature;
+
     private Double aftrBormaWholes;
     private Double aftrBormaBrokens;
     private Double shortWholes;
@@ -24,6 +28,7 @@ public class BormaReportResponse {
     private Double totalWholes;
     private Double totalShort;
     private Double noOfBags;
+
     private String employeeName;
 
     /* ---------- Constructor ---------- */
@@ -34,37 +39,57 @@ public class BormaReportResponse {
             String lotMark,
             String origin,
             String sizeRange,
-            String AfterBormaKernalMoisture,
-            String BormaTimeDuration,
-            String BormaTemperature,
+            String afterBormaKernelMoisture,
+            String bormaTimeDuration,
+            String bormaTemperature,
             Double aftrBormaWholes,
             Double aftrBormaBrokens,
             Double shortWholes,
             Double shortBrokens,
             Double totalWholes,
             Double totalShort,
-            Double noOfBags,
             String employeeName
     ) {
         this.id = id;
         this.date = date;
         this.lotMark = lotMark;
         this.origin = origin;
-        this.perBagWeight = perBagWeight;
         this.sizeRange = sizeRange;
-        this.AfterBormaKernalMoisture = AfterBormaKernalMoisture;
-        this.BormaTimeDuration = BormaTimeDuration;
-        this.BormaTemperature = BormaTemperature;
+        this.afterBormaKernelMoisture = afterBormaKernelMoisture;
+        this.bormaTimeDuration = bormaTimeDuration;
+        this.bormaTemperature = bormaTemperature;
         this.aftrBormaWholes = aftrBormaWholes;
         this.aftrBormaBrokens = aftrBormaBrokens;
         this.shortWholes = shortWholes;
         this.shortBrokens = shortBrokens;
         this.totalWholes = totalWholes;
         this.totalShort = totalShort;
-        this.noOfBags = noOfBags;
         this.employeeName = employeeName;
     }
 
-    /* ---------- Getters ---------- */
+    /* ---------- Mapper ---------- */
 
+    public static BormaReportResponse fromEntity(BormaReport r) {
+        if (r == null) return null;
+
+        return new BormaReportResponse(
+                r.getId(),
+                r.getDate(),
+                r.getLotMark(),
+                r.getOrigin(),
+                r.getSizeRange(),
+                r.getAfterBormaKernelMoisture(),
+                r.getBormaTimeDuration(),
+                r.getBormaTemperature(),
+                r.getAftrBormaWholes(),
+                r.getAftrBormaBrokens(),
+                r.getShortWholes(),
+                r.getShortBrokens(),
+                r.getTotalWholes(),
+                r.getTotalShort(),
+                r.getEmployee() != null
+                        ? r.getEmployee().getEmployee_name()
+                        : null
+        );
+    }
 }
